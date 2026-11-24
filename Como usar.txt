@@ -1,0 +1,26 @@
+LiveZ para Windows 10 e 11 de 64 bits
+
+Abrir e compartilhar
+1. Abra LiveZ.exe para usar a versão portátil ou LiveZ-Instalar.exe para adicionar o aplicativo ao menu Iniciar. O instalador é por usuário.
+2. O painel abre no navegador padrão. Use o Edge ou Chrome atualizado. Mantenha a janela do LiveZ e a aba do painel abertas.
+3. Clique em Gerar convite pela internet. No primeiro uso, o programa baixa o cloudflared do repositório oficial da Cloudflare e verifica seu SHA-256. Ao aparecer o link, clique em Copiar convite e envie ao amigo.
+4. Seu amigo abre o link no navegador e informa o nome. Clique em Aceitar ao reconhecer o pedido.
+5. Clique em Compartilhar tela. Para transmitir o som de todos os aplicativos, selecione Tela inteira. O LiveZ inicia o áudio automaticamente, verifica o Discord desktop durante a transmissão e mostra o estado do filtro no estúdio. O áudio do sistema abrange também aplicativos que estejam em outros monitores.
+6. Ao escolher uma janela, o LiveZ tenta captar o aplicativo correspondente. Para uma aba, marque a opção de áudio no próprio seletor do navegador. O medidor do estúdio acompanha o som transmitido.
+7. Ajuste Volume transmitido para alterar o que todos ouvem. O espectador pode ajustar Seu volume, usar os controles do vídeo e entrar em tela cheia. Caso o navegador pause a reprodução automática, clique em reproduzir no vídeo.
+8. Use Parar transmissão para liberar as trilhas de captura. Para encerrar a sala e invalidar o convite, feche a janela do LiveZ. Com a sala livre, qualquer convidado aprovado pode clicar em Compartilhar minha tela. O anfitrião e os outros convidados assistem na mesma sala. No navegador do convidado, o som da tela inteira pode incluir o Discord. Para usar o filtro nativo como apresentador, abra a sala pelo executável do LiveZ.
+
+Desempenho
+Comece com um espectador em 720p a 30 FPS. O perfil 540p a 15 FPS reduz a carga. 1080p a 60 FPS é um alvo e depende da fonte, da rede e do computador. A qualidade só pode ser alterada com a captura parada. O vídeo vai separadamente a cada espectador (até três). O aplicativo não instala drivers, extensões do Explorer ou hooks de teclado e mouse.
+
+Conectividade
+O endereço temporário usa Cloudflare Quick Tunnels para a página e a sinalização. Esse serviço experimental depende da disponibilidade da Cloudflare. O vídeo usa WebRTC e STUN. Em redes restritivas, pode ser necessário um servidor TURN. Para usar seu servidor, defina LIVEZ_TURN_URL (por exemplo turns:seu-dominio:5349), LIVEZ_TURN_USER e LIVEZ_TURN_PASSWORD no ambiente do anfitrião antes de abrir o LiveZ. Use credenciais com prazo limitado, pois os participantes aprovados as recebem para conectar ao relay.
+
+Filtro do Discord
+Use o aplicativo de desktop do Discord para excluir a chamada ao compartilhar o monitor. O Windows não separa uma chamada do Discord Web dos demais sons do navegador na captura da tela inteira. Quando o Discord abre ou reinicia, o LiveZ reconecta o áudio. Quando encontra instalações independentes do Discord ativas ao mesmo tempo, pausa o áudio e mantém o vídeo. Se a captura de áudio filtrada estiver indisponível na sua versão do Windows, o painel informa a falha. A prévia local fica muda para evitar eco.
+
+Arquivos
+A instalação e o conector ficam em %LOCALAPPDATA%\LiveZ. Para remover, feche o LiveZ, apague essa pasta e o atalho LiveZ do menu Iniciar. O aplicativo portátil pode ser excluído diretamente. Os executáveis não têm assinatura digital.
+
+
+
