@@ -9,7 +9,7 @@ section{box-shadow:0 8px 24px #05090e50}aside section{background:#171e28}
 #inviteLink{display:flex;gap:8px;align-items:center;margin-top:10px}#inviteLink input,#inviteLink button{margin:0}#inviteLink button{white-space:nowrap}
 #watch:empty{display:none}
 @media(max-width:510px){#inviteLink{align-items:stretch;flex-direction:column}.stage footer button{width:100%}.stage footer>div:last-child{width:100%}}
-</style>
+.viewport:has(video:not([hidden])){outline:3px solid #ad68ff;outline-offset:-3px;isolation:isolate}.viewport:has(video:not([hidden])):after{content:"";position:absolute;inset:0;border:3px solid #ad68ff;pointer-events:none}</style>
 <header><div><div class="brand"><img width="32" height="32" alt="" src="/favicon.ico"><strong class="logo">Live<i>Z</i></strong></div><small id="role"></small></div></header><main>
 <div id="host" hidden><h1>Estúdio de transmissão</h1><div class="grid"><div>
 <section class="stage" id="stagePanel"><div class="bar"><h2>Prévia da tela</h2><span class="pill" id="live">Fora do ar</span></div><div class="viewport"><div class="placeholder" id="waiting"><div class="monitor"></div>Escolha uma tela para ver a prévia</div><video id="preview" autoplay playsinline muted hidden></video></div>
@@ -135,7 +135,7 @@ el('start').onclick=async()=>{
   const active=stream;const track=stream.getVideoTracks()[0];track.onended=halt;
   browserAudio=stream.getAudioTracks()[0]||null;stream.getAudioTracks().forEach(t=>{stream.removeTrack(t);if(t!==browserAudio)t.stop()});
   await running;if(stream!==active)return;
-  const claim=await api('claim');if(stream!==active){await api('stop',{stage:claim.stage});return}localStage=claim.stage;resetGuest();
+  const claim=await api('claim',{surface:track.getSettings().displaySurface,label:host?track.label:''});if(stream!==active){await api('stop',{stage:claim.stage});return}localStage=claim.stage;resetGuest();
   mix.gain.connect(mix.out);mix.gain.connect(mix.meter);setGain();stream.addTrack(mix.out.stream.getAudioTracks()[0]);
   mix.meter.fftSize=512;const values=new Float32Array(512);
   meterTimer=setInterval(()=>{mix.meter.getFloatTimeDomainData(values);el('level').value=Math.min(1,Math.max(...values.map(Math.abs)))},160);
@@ -224,3 +224,4 @@ async function tick(){
 }
 window.addEventListener('pagehide',()=>{halt();resetGuest()});tick();
 </script></html>
+

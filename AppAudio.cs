@@ -85,17 +85,22 @@ public static class AppAudio {
             return roots.Count==0?0:roots.Count==1?(int)roots[0]:-1;
         }finally{CloseHandle(snapshot);}
     }
-    static Process WindowProcess(string label){
+    public static IntPtr WindowHandle(string label){
         var parts=label.Split(':');long hwnd;int pid;
         if(parts.Length>=2 && parts[0]=="window" && long.TryParse(parts[1],out hwnd) &&
-           GetWindowThreadProcessId(new IntPtr(hwnd),out pid)!=0)return Process.GetProcessById(pid);
-        int match=0;
+           GetWindowThreadProcessId(new IntPtr(hwnd),out pid)!=0)return new IntPtr(hwnd);
+        IntPtr match=IntPtr.Zero;
         foreach(var p in Process.GetProcesses())using(p)try{
             if(label.Length>0 && p.MainWindowHandle!=IntPtr.Zero && p.MainWindowTitle==label){
-                if(match!=0)throw new IOException();match=p.Id;
+                if(match!=IntPtr.Zero)return IntPtr.Zero;match=p.MainWindowHandle;
             }
         }catch(System.ComponentModel.Win32Exception){}catch(InvalidOperationException){}
-        return Process.GetProcessById(match);
+        return match;
+    }
+    static Process WindowProcess(string label){
+        int pid;
+        if(GetWindowThreadProcessId(WindowHandle(label),out pid)==0)throw new IOException();
+        return Process.GetProcessById(pid);
     }
     static Process IdleAnchor(){
         using(var self=Process.GetCurrentProcess()){
@@ -152,4 +157,5 @@ public static class AppAudio {
     }
     static void Write(Stream stream,string message){var bytes=Encoding.ASCII.GetBytes(message);stream.Write(bytes,0,bytes.Length);}
 }
+
 

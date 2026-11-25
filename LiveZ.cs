@@ -37,9 +37,10 @@ class LiveZ {
     static readonly Guest hostSeat=new Guest{id="host",name="Anfitrião",state="accepted"};
     static Guest presenter;
     static string stage="";
+    static IntPtr captureWindow;
     static IEnumerable<Guest> Seats(){return guests.Values.Concat(new[]{hostSeat});}
     static void EndStage(){
-        presenter=null;stage="";
+        presenter=null;stage="";captureWindow=IntPtr.Zero;
         foreach(var seat in Seats()){seat.offer="";seat.answer="";}
     }
     static object Snapshot(Guest me){
@@ -81,6 +82,7 @@ class LiveZ {
             if(me.state!="accepted")throw new Exception("Aguarde a aprovação.");
             if(cmd=="claim"){
                 if(presenter!=null)throw new Exception("A sala já tem uma apresentação em andamento.");
+                if(me==hostSeat && Field(d,"surface")=="window")captureWindow=AppAudio.WindowHandle(Field(d,"label"));
                 presenter=me;stage=Token();return new {stage};
             }
             if(stage=="" || Field(d,"stage")!=stage)throw new Exception("A apresentação mudou.");
@@ -177,9 +179,14 @@ class LiveZ {
         open.FlatAppearance.BorderSize=0;end.FlatAppearance.BorderColor=System.Drawing.Color.FromArgb(76,92,110);form.Controls.Add(title);
         open.Click+=(s,e)=>{try{Process.Start(new ProcessStartInfo(url){UseShellExecute=true});}catch(Exception ex){MessageBox.Show(ex.Message);}};
         end.Click+=(s,e)=>form.Close();form.Controls.AddRange(new Control[]{info,open,end});form.Shown+=(s,e)=>open.PerformClick();
-        Application.Run(form);lock(gate){closing=true;if(tunnel!=null && !tunnel.HasExited)tunnel.Kill();}listener.Stop();
+        using(var outline=new CaptureOutline())
+        using(var timer=new System.Windows.Forms.Timer {Interval=100}){
+            timer.Tick+=(s,e)=>{IntPtr target;lock(gate){target=(DateTime.UtcNow-hostSeat.seen).TotalSeconds<90?captureWindow:IntPtr.Zero;}outline.Follow(target);};
+            timer.Start();Application.Run(form);
+        }lock(gate){closing=true;if(tunnel!=null && !tunnel.HasExited)tunnel.Kill();}listener.Stop();
     }
 }
+
 
 
 
