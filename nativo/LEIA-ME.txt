@@ -1,0 +1,12 @@
+LiveZ Nativo — Windows 10 e 11 x64
+
+Extraia o ZIP por completo e abra LiveZ.exe. Mantenha LiveZ.Room.exe, ffmpeg.exe e ffplay.exe na mesma pasta.
+
+1. Abra o seletor “Tela ou janela” e confira a fonte antes de transmitir.
+2. Escolha 720p/30 ou 1080p/60. Clique em Transmitir. O estúdio mostra o encoder e os FPS medidos. Ver prévia abre um player local mudo.
+3. Clique em Gerar convite, depois em Copiar convite. O primeiro uso pode baixar o conector oficial da Cloudflare. Mantenha o estúdio do anfitrião aberto durante a sala.
+4. O amigo abre esta mesma edição, cola o convite e clica em Entrar. O pedido aparece com o nome de usuário do Windows do convidado. O anfitrião escolhe Aceitar ou Recusar. O vídeo abre em uma janela nativa ao começar a transmissão. Use F para tela cheia e 9/0 para volume.
+5. Um convidado aprovado também pode clicar em Transmitir quando a sala estiver livre. Para trocar o apresentador, primeiro clique em Parar.
+
+O serviço de sala e distribuição usa Rust. A interface é Windows Forms. A captura usa Windows Graphics Capture. O LiveZ testa os encoders H.264 da GPU e usa x264 como alternativa. O som usa WASAPI e AAC. Na captura de monitor, o filtro tenta excluir o aplicativo Discord desktop. Chamadas no Discord Web podem ser ouvidas.
+O vídeo e o áudio usam MPEG-TS distribuído pela sala via HTTPS no convite. O serviço de túnel recebe esse tráfego e sua disponibilidade e vazão influenciam a reprodução. Os convites desta edição funcionam de aplicativo para aplicativo.

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
@@ -108,12 +108,12 @@ public static class AppAudio {
                 UseShellExecute=false,RedirectStandardInput=true,CreateNoWindow=true});
         }
     }
-    public static void Send(Stream output,string captureMode) {
+    public static void Send(Stream output,string captureMode,bool raw=false) {
         bool headers=false;Process anchor=null;
         try {
             bool desktop=captureMode=="desktop";
             int root=desktop?DiscordRoot():0;
-            if(root<0){Write(output,"HTTP/1.1 423 Locked\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");return;}
+            if(root<0){if(raw)return;Write(output,"HTTP/1.1 423 Locked\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");return;}
             if(desktop && root==0)anchor=IdleAnchor();
             using(var process=desktop?Process.GetProcessById(root==0?anchor.Id:root):WindowProcess(Uri.UnescapeDataString(captureMode.Substring(7)))){
                 if(!desktop && IsDiscord(process.ProcessName))throw new IOException();
@@ -133,7 +133,7 @@ public static class AppAudio {
                     var format=new Wave{tag=1,channels=2,rate=48000,bytes=192000,align=4,bits=16};
                     client.Initialize(0,0x80020000,200000,0,ref format,IntPtr.Zero);
                     var service=typeof(ICapture).GUID;client.GetService(ref service,out capture);client.Start();
-                    Write(output,"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nX-LiveZ-Filter: "+(desktop?(root==0?"waiting":"discord"):"window")+"\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n");headers=true;
+                    if(!raw)Write(output,"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nX-LiveZ-Filter: "+(desktop?(root==0?"waiting":"discord"):"window")+"\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n");headers=true;
                     byte[] buffer=new byte[8192],quiet=new byte[4];var idle=Stopwatch.StartNew();
                     var guard=Stopwatch.StartNew();var pending=new MemoryStream();
                     while(!process.HasExited){
@@ -152,10 +152,8 @@ public static class AppAudio {
                     }
                 }finally{if(capture!=null)Marshal.ReleaseComObject(capture);Marshal.ReleaseComObject(client);callback.ready.Dispose();}
             }
-        }catch(Exception){if(!headers)Write(output,"HTTP/1.1 409 Conflict\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");}
+        }catch(Exception){if(!raw && !headers)Write(output,"HTTP/1.1 409 Conflict\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");}
         finally{if(anchor!=null){anchor.StandardInput.Close();anchor.Dispose();}}
     }
     static void Write(Stream stream,string message){var bytes=Encoding.ASCII.GetBytes(message);stream.Write(bytes,0,bytes.Length);}
 }
-
-
